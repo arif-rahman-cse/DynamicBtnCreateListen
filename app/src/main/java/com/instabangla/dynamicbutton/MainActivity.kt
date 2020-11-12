@@ -17,21 +17,23 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initHawk()
 
+        val buttonMap = mutableMapOf<Int, Button>()
+        //var index = 1
+        var chatTab = 1
+
+        if (Hawk.get<Int>(Constants.CHAT_TAB) != null) {
+            chatTab = Hawk.get(Constants.CHAT_TAB)
+            //index = Hawk.get(Constants.CHAT_TAB)
+
+        }
+
         val ll = findViewById<View>(R.id.button_layout) as LinearLayout
         val lp = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
-        val buttonMap = mutableMapOf<Int, Button>()
-        var index = 1
-
-        val chatTab = Hawk.get<Int>(Constants.CHAT_TAB)
-        if (chatTab != null) {
-            getChatTabLog(chatTab, lp, ll)
-        } else {
-            Log.d(TAG, "onCreate: Nothing to do...No chat tab was created!!")
-        }
+        getChatTabLog(chatTab, lp, ll)
 
 
         /*
@@ -51,13 +53,13 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "onCreate: Add button clicked")
 
             val btn = Button(this)
-            buttonMap[index] = btn
-            btn.text = "button-$index"
+            buttonMap[chatTab] = btn
+            btn.text = "button-$chatTab"
             btn.layoutParams = lp
             ll.addView(btn)
-            index++
+            chatTab++
             setClickListener(buttonMap)
-            Hawk.put(Constants.CHAT_TAB, index)
+            Hawk.put(Constants.CHAT_TAB, chatTab)
 
             //button.add(btn)
 
