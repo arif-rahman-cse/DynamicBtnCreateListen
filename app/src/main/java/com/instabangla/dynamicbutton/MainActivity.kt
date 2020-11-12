@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.orhanobut.hawk.Hawk
 
 
 class MainActivity : AppCompatActivity() {
@@ -14,12 +15,24 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        initHawk()
 
         val ll = findViewById<View>(R.id.button_layout) as LinearLayout
-        val lp = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val lp = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
 
         val buttonMap = mutableMapOf<Int, Button>()
         var index = 1
+
+        val chatTab = Hawk.get<Int>(Constants.CHAT_TAB)
+        if (chatTab != null) {
+            getChatTabLog(chatTab, lp, ll)
+        } else {
+            Log.d(TAG, "onCreate: Nothing to do...No chat tab was created!!")
+        }
+
 
         /*
         for (i in 0 until 5) {
@@ -43,8 +56,8 @@ class MainActivity : AppCompatActivity() {
             btn.layoutParams = lp
             ll.addView(btn)
             index++
-
             setClickListener(buttonMap)
+            Hawk.put(Constants.CHAT_TAB, index)
 
             //button.add(btn)
 
@@ -75,8 +88,25 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun getChatTabLog(
+        chatTab: Int,
+        lp: ViewGroup.LayoutParams,
+        ll: LinearLayout
+    ) {
+
+        for (key in 1 until chatTab) {
+            val btn = Button(this)
+            btn.text = "Button $key"
+            btn.layoutParams = lp
+            btn.setOnClickListener { Log.d("TAG", "The index is$key") }
+            ll.addView(btn)
+        }
+
+    }
+
     private fun setClickListener(buttonMap: MutableMap<Int, Button>) {
-        for (key in buttonMap.keys){
+
+        for (key in buttonMap.keys) {
             Log.d(TAG, "setClickListener: key: $key Value: ${buttonMap[key]}")
             buttonMap[key]!!.setOnClickListener {
                 Log.d(TAG, "setClickListener: Clicked Button: $key")
@@ -86,6 +116,10 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
+    }
+
+    private fun initHawk() {
+        Hawk.init(this).build()
     }
 }
 
